@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Classification - CIFAR-100</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🖼️ Image Classification</h1>
+                <p>Powered by ResNet50 + CIFAR-100</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Info Section -->
+            <section class="info-section">
+                <h2>Welcome to AI Image Classifier</h2>
+                <p>Upload an image and our deep learning model will classify it into one of 100 different object categories.</p>
+            </section>
+
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="upload-box" id="uploadBox">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <h3>Upload Image</h3>
+                    <p>Drag and drop your image here or click to select</p>
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                </div>
+
+                <!-- Image Preview -->
+                <div class="image-preview-box" id="previewBox" style="display: none;">
+                    <img id="previewImage" src="" alt="Preview">
+                    <button class="btn btn-secondary" id="changeImageBtn">Change Image</button>
+                </div>
+            </section>
+
+            <!-- Classify Button -->
+            <section class="button-section">
+                <button class="btn btn-primary" id="classifyBtn" disabled>
+                    <span id="btnText">Upload an image to classify</span>
+                    <span class="loader" id="loader" style="display: none;"></span>
+                </button>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h2>Classification Results</h2>
+                
+                <div class="result-card">
+                    <div class="top-prediction">
+                        <h3>Top Prediction</h3>
+                        <div class="prediction-main">
+                            <p class="prediction-class" id="topClass">-</p>
+                            <p class="prediction-confidence" id="topConfidence">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top 5 Predictions -->
+                <div class="predictions-list">
+                    <h3>Top 5 Predictions</h3>
+                    <div id="predictionsList"></div>
+                </div>
+
+                <!-- Error Message -->
+                <div class="error-message" id="errorMessage" style="display: none;"></div>
+            </section>
+
+            <!-- Confidence Distribution Chart -->
+            <section class="chart-section" id="chartSection" style="display: none;">
+                <h3>Confidence Distribution</h3>
+                <canvas id="confidenceChart"></canvas>
+            </section>
+
+            <!-- Info Cards -->
+            <section class="info-cards">
+                <div class="info-card">
+                    <h4>📊 Model</h4>
+                    <p>EfficientNet-B5 with Transfer Learning</p>
+                </div>
+                <div class="info-card">
+                    <h4>🎯 Classes</h4>
+                    <p>1000 Object Categories (ImageNet)</p>
+                </div>
+                <div class="info-card">
+                    <h4>⚡ Speed</h4>
+                    <p>Real-time classification</p>
+                </div>
+                <div class="info-card">
+                    <h4>🔒 Privacy</h4>
+                    <p>Images processed locally</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 AI Image Classification | ML Engineering Project</p>
+        </footer>
+    </div>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>
