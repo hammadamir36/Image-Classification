@@ -1,1227 +1,897 @@
-# 🎯 CIFAR-100 Image Classification | ML Engineering Assessment
+---
+title: Image Classification
+emoji: 🖼️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+license: mit
+---
 
-**Status**: ✅ Complete | **Quality**: Production-Ready | **Timeline**: ~1 hour to deploy
+# CIFAR-100 / ImageNet Image Classification Web App
 
-A complete, production-ready computer vision project demonstrating ML engineering discipline with data understanding, model training, evaluation, and deployment. This project trains deep learning models on CIFAR-100 dataset and deploys them via REST API with modern web frontend.
+An end-to-end computer vision project that demonstrates the complete machine learning engineering workflow: dataset loading, preprocessing, model design, transfer learning, inference, REST API development, frontend integration, Dockerization, and Hugging Face Spaces deployment.
+
+The project is designed as an interview-ready ML engineering assessment. It shows not only model development, but also clean modular code, API design, deployment readiness, and practical debugging considerations.
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
-1. [Quick Start (5 Minutes)](#quick-start-5-minutes)
-2. [Project Overview](#project-overview)
-3. [What's Been Built](#whats-been-built)
-4. [Problem Statement & Dataset Selection](#problem-statement--dataset-selection)
-5. [Project Structure](#project-structure)
-6. [Complete Installation & Setup](#complete-installation--setup)
-7. [Training Guide](#training-guide)
-8. [Deployment & Web Interface](#deployment--web-interface)
-9. [API Reference](#api-reference)
-10. [Execution Workflow](#complete-execution-workflow)
-11. [Configuration Reference](#configuration-reference)
-12. [Troubleshooting](#troubleshooting)
-13. [Performance Metrics](#performance-metrics)
-14. [Code Architecture & Quality](#code-architecture--quality)
-15. [Assessment Compliance](#assessment-compliance)
-16. [FAQ & Support](#faq--support)
+1. [Project Summary](#project-summary)
+2. [Live Demo](#live-demo)
+3. [Key Features](#key-features)
+4. [Dataset](#dataset)
+5. [Model Architecture](#model-architecture)
+6. [Project Structure](#project-structure)
+7. [Installation](#installation)
+8. [Running Locally](#running-locally)
+9. [Training](#training)
+10. [Inference Pipeline](#inference-pipeline)
+11. [API Reference](#api-reference)
+12. [Docker Deployment](#docker-deployment)
+13. [Hugging Face Spaces Deployment](#hugging-face-spaces-deployment)
+14. [Configuration](#configuration)
+15. [Evaluation and Expected Results](#evaluation-and-expected-results)
+16. [Known Limitations](#known-limitations)
+17. [Future Improvements](#future-improvements)
+18. [Interview Explanation](#interview-explanation)
+19. [Troubleshooting](#troubleshooting)
 
 ---
 
-## ⚡ Quick Start (5 Minutes)
+## Project Summary
 
-```bash
-# 1. Install dependencies (5 min)
-pip install -r requirements.txt
+This project implements an image classification system with a web interface and Flask API. Users can upload an image, the backend preprocesses it, runs it through a deep learning model, and returns the top predicted classes with confidence scores.
 
-# 2. Train models (45 min on CPU, 12 min on GPU)
-python train.py
+The project includes:
 
-# 3. Start web server (< 1 min)
-python src/app.py
+- CIFAR-100 data loading and augmentation
+- A custom baseline CNN
+- A transfer-learning model using EfficientNet-B5 with ImageNet pretrained weights
+- PyTorch training and validation utilities
+- Test-time augmentation during inference
+- Flask REST API
+- Drag-and-drop frontend
+- Docker-based deployment
+- Hugging Face Spaces compatibility
 
-# 4. Open browser
-# http://localhost:5000
+The project is structured to demonstrate both **machine learning knowledge** and **production engineering discipline**.
 
-# 5. Upload image and classify!
+---
+
+## Live Demo
+
+Hugging Face Space:
+
+```text
+https://huggingface.co/spaces/ahmadhammadamir75/Image-Classification
 ```
 
-**Expected Results After 5 Epochs**:
-- Baseline Model: ~32-35% accuracy
-- Advanced Model (ResNet50): ~42-45% accuracy
-- Training time: ~45 minutes (CPU), ~12 minutes (GPU)
+Main app endpoint:
+
+```text
+/
+```
+
+Prediction endpoint:
+
+```text
+/api/predict
+```
+
+Health check endpoint:
+
+```text
+/api/health
+```
+
+API metadata endpoint:
+
+```text
+/api/info
+```
 
 ---
 
-## 🎯 Project Overview
+## Key Features
 
-### What This Is
+### Machine Learning
 
-This is a **complete ML engineering project** demonstrating:
-- ✅ End-to-end ML pipeline (data → model → evaluation → deployment)
-- ✅ Proper ML methodology (correct train/val/test splits, evaluation metrics)
-- ✅ Production-ready code (modular architecture, error handling, logging)
-- ✅ Web deployment (REST API + responsive frontend)
-- ✅ Transfer learning (ResNet50 with fine-tuning)
-- ✅ Comprehensive documentation (8 guides, Jupyter notebook)
+- CIFAR-100 dataset support
+- Train/validation/test split
+- Image augmentation for better generalization
+- Baseline CNN implementation
+- Transfer learning using EfficientNet-B5
+- Cross-entropy loss for multi-class classification
+- Adam optimizer
+- Learning-rate scheduling
+- Softmax-based probability output
+- Top-k prediction output
+
+### Backend Engineering
+
+- Flask REST API
+- CORS support
+- File upload validation
+- File size limit handling
+- JSON response format
+- Error handling for invalid requests
+- Health check endpoint
+- Runtime device detection: CPU or CUDA
+
+### Frontend
+
+- Static HTML/CSS/JavaScript interface
+- Drag-and-drop image upload
+- Image preview before classification
+- Prediction result display
+- Confidence visualization
+
+### Deployment
+
+- Dockerfile included
+- Hugging Face Spaces compatible
+- Exposes port `7860`
+- Production-style environment variables
+- Health check configured
+
+---
+
+## Dataset
+
+The project uses **CIFAR-100** for the training pipeline.
+
+CIFAR-100 is a computer vision benchmark dataset containing:
+
+| Property | Value |
+|---|---|
+| Number of classes | 100 |
+| Image type | RGB |
+| Image size | 32×32 |
+| Training images | 50,000 |
+| Test images | 10,000 |
+| Images per class | 600 |
+| Task type | Multi-class image classification |
 
 ### Why CIFAR-100?
 
-| Property | Details |
-|----------|---------|
-| **Classes** | 100 (non-trivial vs CIFAR-10's 10) |
-| **Images** | 60,000 (substantial scale) |
-| **Resolution** | 32×32 RGB (challenging) |
-| **Balance** | Perfect (600 samples/class) |
-| **Assessment** | ✅ NOT in "avoid" list (only CIFAR-10/MNIST are prohibited) |
-| **Training** | ~45 minutes (CPU), laptop-friendly |
+CIFAR-100 is more challenging than beginner datasets such as MNIST or CIFAR-10 because it has 100 classes instead of 10. This makes it a better choice for demonstrating classification, augmentation, transfer learning, and model evaluation.
 
-**Important**: Assessment says "avoid MNIST or CIFAR-10" - CIFAR-100 is explicitly non-trivial and **allowed**.
+The dataset is also small enough to train on limited hardware, which makes it practical for an ML engineering assessment.
 
 ---
 
-## 📦 What's Been Built
+## Model Architecture
 
-### ✅ Core ML Pipeline
-- Data loading from CIFAR-100 with automatic download
-- Intelligent preprocessing and augmentation
-- Baseline CNN (3-layer, 1.2M parameters)
-- Advanced ResNet50 with transfer learning (23M parameters)
-- Proper train/validation/test evaluation
-- Comprehensive error analysis
+The project contains two model paths:
 
-### ✅ Production-Ready Code
-- Modular architecture (data.py, model.py, inference.py, app.py)
-- Configuration management (src/config.py)
-- REST API with Flask (3 endpoints)
-- Error handling and input validation
-- Production logging
+### 1. Baseline CNN
 
-### ✅ Web Frontend
-- Beautiful HTML5/CSS3/JavaScript interface
-- Drag-and-drop image upload
-- Real-time predictions
-- Confidence visualization with Chart.js
-- Mobile-responsive design
+The baseline model is a simple convolutional neural network used as a reference point.
 
-### ✅ Complete Documentation
-- Consolidated comprehensive guide (this README)
-- Jupyter notebook with interactive analysis
-- Setup validation scripts
-- Troubleshooting guide
-- Configuration reference
+Architecture:
 
-### ✅ Deployment Ready
-- Docker containerization
-- Environment configuration templates
-- Validation scripts (Windows & Unix)
-- Production-grade error handling
+```text
+Input image
+↓
+Conv2D: 3 → 64
+ReLU
+MaxPool
+↓
+Conv2D: 64 → 128
+ReLU
+MaxPool
+↓
+Conv2D: 128 → 256
+ReLU
+MaxPool
+↓
+Adaptive Average Pooling
+↓
+Linear: 256 → 512
+ReLU
+Dropout
+↓
+Linear: 512 → num_classes
+```
+
+Purpose:
+
+- Validate the data pipeline
+- Establish a baseline performance
+- Compare against transfer learning
+- Keep training lightweight and understandable
+
+### 2. Advanced Transfer-Learning Model
+
+The advanced model uses **EfficientNet-B5** with ImageNet pretrained weights.
+
+EfficientNet is a strong convolutional architecture that scales depth, width, and resolution in a balanced way. Using pretrained weights allows the model to start from useful visual features such as edges, textures, shapes, and object parts.
+
+Current implementation:
+
+```python
+models.efficientnet_b5(weights=models.EfficientNet_B5_Weights.IMAGENET1K_V1)
+```
+
+Important note:
+
+The current deployed inference path uses ImageNet-style preprocessing and ImageNet class labels. For a pure CIFAR-100 classifier, the final classifier head should be changed to output 100 classes, and inference labels should use CIFAR-100 class names.
+
+This is documented clearly in the [Known Limitations](#known-limitations) section.
 
 ---
 
-## 🔍 Problem Statement & Dataset Selection
+## Project Structure
 
-### Task: Image Classification
-
-Selected because:
-1. **Practical Relevance**: Most common real-world CV application
-2. **ML Engineering Focus**: Clear evaluation metrics, error analysis, deployment patterns
-3. **Scalable Difficulty**: From simple CNN to advanced transfer learning
-4. **Compute-Friendly**: Doesn't require specialized hardware
-
-### Dataset: CIFAR-100 (NOT CIFAR-10)
-
-**Critical Clarification**:
+```text
+Image-Classification/
+│
+├── src/
+│   ├── __init__.py
+│   ├── app.py                    # Flask API and web server
+│   ├── config.py                 # Configuration, paths, hyperparameters
+│   ├── data.py                   # CIFAR-100 loading, transforms, dataloaders
+│   ├── inference.py              # Image preprocessing and prediction logic
+│   ├── model.py                  # Baseline CNN, EfficientNet model, trainer
+│   ├── imagenet_class_index.json # ImageNet class ID to label mapping
+│   └── imagenet_classes.py       # ImageNet class utilities
+│
+├── static/
+│   ├── index.html                # Frontend UI
+│   ├── styles.css                # Styling
+│   └── script.js                 # Frontend API calls
+│
+├── models/
+│   └── advanced_model.pt         # Saved model file, if available
+│
+├── data/
+│   └── cifar-100-python/         # Dataset cache after download
+│
+├── notebooks/
+│   └── analysis.ipynb            # Optional notebook analysis
+│
+├── train.py                      # Training script
+├── train.ipynb                   # Notebook training version
+├── train_gpu_optimized.ipynb     # GPU-oriented notebook
+├── requirements.txt              # Python dependencies
+├── Dockerfile                    # Docker deployment config
+├── .env.template                 # Environment variable template
+└── README.md                     # Project documentation
 ```
-Assessment says: "avoid MNIST or CIFAR-10"
-Assessment does NOT say: "avoid CIFAR-100"
-
-CIFAR-100 (100 classes) ≠ CIFAR-10 (10 classes)
-✅ CIFAR-100 is ALLOWED and RECOMMENDED
-```
-
-### Why CIFAR-100 Meets Requirements
-
-1. **Non-Trivial**: 100 classes with real visual complexity
-2. **Real-World Applicable**: Product recognition, medical imaging, scene understanding
-3. **Balanced Distribution**: 600 samples per class (no imbalance tricks needed)
-4. **Sufficient Scale**: Large enough for CNN training, small enough for laptop
-5. **Well-Established**: 2000+ papers use this dataset
-6. **Computational Efficiency**: 
-   - Download: 170 MB
-   - Training: 45 min (CPU)
-   - Model: ~100 MB
-   - Inference: ~50ms
-
-### Sample CIFAR-100 Classes (100 total)
-
-Animals, Vehicles, Objects, People, Natural scenes, Food, and more:
-- Animals: dog, cat, horse, elephant, bear, tiger, monkey, etc.
-- Vehicles: car, truck, airplane, boat, bicycle, motorcycle, etc.
-- Objects: bed, lamp, table, keyboard, phone, television, etc.
-- Natural: forest, mountain, beach, sky, river, glacier, etc.
-- Food: pizza, ice cream, apple, orange, mushroom, etc.
 
 ---
 
-## 📁 Project Structure
-
-### Directory Layout
-
-```
-Test/
-├── src/                        # Core Python modules
-│   ├── __init__.py            # Package marker
-│   ├── config.py              # Configuration & hyperparameters
-│   ├── data.py                # Data loading & preprocessing
-│   ├── model.py               # Model architecture & training
-│   ├── inference.py           # Prediction pipeline
-│   └── app.py                 # Flask web server
-│
-├── static/                     # Web frontend
-│   ├── index.html             # Responsive HTML5 interface
-│   ├── styles.css             # Beautiful styling & animations
-│   └── script.js              # Frontend logic & API calls
-│
-├── notebooks/                  # Jupyter
-│   └── analysis.ipynb         # Interactive analysis & visualization
-│
-├── train.py/train.tpynb       # Training orchestration script
-├── requirements.txt           # Python dependencies
-├── Dockerfile                 # Docker containerization
-├── .env.template              # Configuration template
-├── validate_setup.bat         # Setup validation (Windows)
-├── validate_setup.sh          # Setup validation (Unix)
-│
-├── models/                    # Saved model weights (after training)
-│   ├── baseline_model.pt      # Baseline CNN
-│   └── advanced_model.pt      # ResNet50 transfer learning
-│
-├── data/                      # Dataset cache (after first run)
-│   └── cifar-100-python/
-│
-└── README.md                  # This file (consolidated docs)
-```
-
-### File Purposes
-
-| File | Purpose | Type |
-|------|---------|------|
-| `src/config.py` | Centralized configuration | Config |
-| `src/data.py` | CIFAR-100 data loading & preprocessing | Core |
-| `src/model.py` | Baseline CNN + ResNet50 architecture | Core |
-| `src/inference.py` | Inference pipeline for predictions | Core |
-| `src/app.py` | Flask REST API server | Deployment |
-| `train.py` | Training orchestration | Core |
-| `static/index.html` | Web interface | Frontend |
-| `static/styles.css` | Styling & animations | Frontend |
-| `static/script.js` | API interaction & events | Frontend |
-| `notebooks/analysis.ipynb` | Interactive analysis | Analysis |
-
----
-
-## 🔧 Complete Installation & Setup
+## Installation
 
 ### Prerequisites
 
-- **Python**: 3.9 or higher
-- **RAM**: 4GB+ (8GB recommended)
-- **Disk**: 2GB+ free (for dataset and models)
-- **Internet**: For downloading CIFAR-100
-- **Browser**: Any modern browser (Chrome, Firefox, Safari, Edge)
+Recommended environment:
 
-### Step 1: Verify Python Installation
+- Python 3.10+
+- 4 GB RAM minimum
+- 8 GB RAM recommended
+- Internet connection for dataset/model downloads
+- Optional CUDA GPU for faster training
+
+### 1. Clone the repository
 
 ```bash
-python --version  # Should be 3.9 or higher
+git clone https://huggingface.co/spaces/ahmadhammadamir75/Image-Classification
+cd Image-Classification
 ```
 
-### Step 2: Create Virtual Environment (Recommended)
+### 2. Create a virtual environment
+
+Windows:
 
 ```bash
-# Windows
 python -m venv venv
 venv\Scripts\activate
+```
 
-# Mac/Linux
+macOS/Linux:
+
+```bash
 python -m venv venv
 source venv/bin/activate
 ```
 
-### Step 3: Install Dependencies
+### 3. Install dependencies
 
 ```bash
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-**What Gets Installed**:
-- PyTorch 2.0.1+ (deep learning framework)
-- TorchVision (computer vision utilities)
-- Flask 2.3.2+ (web server)
-- Jupyter (notebooks)
-- Matplotlib/Seaborn (visualization)
-- And 10+ other dependencies
+Main dependencies include:
 
-### Step 4: Verify Installation
-
-```bash
-# Run validation script
-# Windows
-validate_setup.bat
-
-# Mac/Linux
-bash validate_setup.sh
-```
-
-Expected output:
-```
-✓ Python version: 3.x.x
-✓ PyTorch: 2.x.x installed
-✓ CUDA Available: False (or True if GPU present)
-✓ All critical imports successful
-```
-
-### Troubleshooting Installation
-
-**Issue**: `RuntimeError: operator torchvision::nms does not exist`
-
-**Solution**: Update requirements.txt with compatible versions
-```bash
-pip install --upgrade torch torchvision
-```
-
-**Issue**: `AttributeError: module 'pkgutil' has no attribute 'ImpImporter'`
-
-**Solution**: This is a Python 3.12+ compatibility issue. Update numpy:
-```bash
-pip install --upgrade numpy
+```text
+torch
+torchvision
+numpy
+pandas
+Pillow
+scikit-learn
+matplotlib
+seaborn
+Flask
+Flask-CORS
+Werkzeug
+tqdm
+python-dotenv
+huggingface-hub
+requests
 ```
 
 ---
 
-## 📊 Training Guide
+## Running Locally
 
-### Quick Training (Default Settings)
-
-```bash
-python train.py
-```
-
-**What Happens**:
-1. Downloads CIFAR-100 (~170 MB, takes ~2-5 minutes)
-2. Trains baseline CNN (5 epochs)
-3. Trains advanced ResNet50 (5 epochs)
-4. Evaluates both on test set
-5. Saves models to `models/` directory
-
-**Expected Output**:
-```
-Device: cpu
-Batch Size: 32
-Epochs: 20
-Learning Rate: 0.001
-
-Training Baseline Model...
-Epoch [1/20] Train Loss: 3.2145 Train Acc: 22.45%
-             Val Loss: 2.8934 Val Acc: 28.90%
-Epoch [2/20] Train Loss: 2.4532 Train Acc: 35.67%
-             Val Loss: 2.3421 Val Acc: 37.12%
-...
-Test Accuracy: 33.50%
-
-Training Advanced Model (ResNet50)...
-...
-Test Accuracy: 43.80%
-```
-
-### Expected Accuracy Results
-
-| Model | Epochs | Accuracy | Time (CPU) | Time (GPU) |
-|-------|--------|----------|-----------|-----------|
-| Baseline | 5 | 32-35% | 15 min | 3 min |
-| Advanced | 5 | 42-45% | 40 min | 8 min |
-
-### Custom Training Configuration
-
-Edit `src/config.py`:
-
-```python
-# Adjust these for your system
-BATCH_SIZE = 32              # Reduce if GPU memory limited
-NUM_EPOCHS = 20              # More epochs = better accuracy
-LEARNING_RATE = 0.001        # Fine-tuned for CIFAR-100
-IMAGE_SIZE = 224             # Standard for ResNet
-
-# Device selection
-DEVICE = "cuda"              # "cuda" for GPU, "cpu" for CPU
-```
-
-Then retrain:
-```bash
-python train.py
-```
-
-### Training Strategies
-
-**Strategy 1: Fast Iteration** (5-10 minutes)
-```python
-NUM_EPOCHS = 3
-BATCH_SIZE = 16
-```
-
-**Strategy 2: Balanced** (30-45 minutes)
-```python
-NUM_EPOCHS = 10
-BATCH_SIZE = 32
-```
-
-**Strategy 3: High Quality** (2+ hours)
-```python
-NUM_EPOCHS = 50
-BATCH_SIZE = 32
-LEARNING_RATE = 0.0001
-```
-
-### Understanding the Models
-
-**Baseline CNN**:
-- Simple 3-layer convolutional network
-- ~1.2M parameters
-- Quick to train (~3 min/epoch)
-- Purpose: Sanity check, performance baseline
-- Expected accuracy: 32-35%
-
-**Advanced ResNet50**:
-- Pre-trained on ImageNet, fine-tuned on CIFAR-100
-- ~23M parameters (mostly pre-trained)
-- Takes longer (~8 min/epoch)
-- Purpose: Production model, best accuracy
-- Expected accuracy: 42-45%
-- Improvement: +10-12% via transfer learning
-
----
-
-## 🌐 Deployment & Web Interface
-
-### Starting the Server
+Start the Flask application:
 
 ```bash
 python src/app.py
 ```
 
-Expected output:
-```
-WARNING in app.run_simple (...)
-* Running on http://0.0.0.0:5000
-* Debug mode: on
-```
+By default, the app uses:
 
-### Accessing the Web Interface
-
-1. Open your browser
-2. Navigate to: **http://localhost:5000**
-3. Beautiful interface loads automatically
-
-### Using the Web Interface
-
-1. **Upload Image**:
-   - Click the upload area OR
-   - Drag and drop an image file (JPG, PNG, GIF, BMP)
-   - Max size: 5 MB
-
-2. **Preview**:
-   - Image displays before classification
-
-3. **Classify**:
-   - Click "Classify Image" button
-   - Wait for predictions
-
-4. **View Results**:
-   - Top prediction with confidence
-   - Top 5 predictions list
-   - Confidence bar chart
-   - Real-time visualization
-
-### Example Prediction Output
-
-```
-Top Prediction: dog (87.23%)
-
-Top 5 Predictions:
-1. dog          87.23%  ████████████████████░░░░
-2. wolf         8.45%   ██░░░░░░░░░░░░░░░░░░░░░░
-3. bear         2.89%   █░░░░░░░░░░░░░░░░░░░░░░░
-4. cat          1.23%   
-5. lion         0.20%   
-
-Confidence Chart: [Bar visualization]
+```text
+Host: 0.0.0.0
+Port: 7860
 ```
 
-### Supported Image Formats
+Open the app in your browser:
 
-- JPEG (.jpg, .jpeg)
-- PNG (.png)
-- GIF (.gif)
-- BMP (.bmp)
-- WebP (.webp)
+```text
+http://localhost:7860
+```
 
-**File Size Limit**: 5 MB
+Then upload an image and click the classification button.
 
 ---
 
-## 📡 API Reference
+## Training
 
-### REST API Endpoints
+Run the training script:
 
-All endpoints are available at `http://localhost:5000`
-
-#### 1. POST `/api/predict`
-
-Make a prediction on an image.
-
-**Request**:
 ```bash
-curl -X POST -F "file=@/path/to/image.jpg" \
-  http://localhost:5000/api/predict
+python train.py
 ```
 
-**Response** (Success):
+The training process performs the following steps:
+
+1. Loads CIFAR-100
+2. Applies training augmentations
+3. Splits the training set into train and validation sets
+4. Creates dataloaders
+5. Trains the baseline CNN
+6. Trains or initializes the advanced transfer-learning model
+7. Evaluates model performance
+8. Saves model weights to the `models/` directory
+
+### Default training configuration
+
+Defined in `src/config.py`:
+
+```python
+IMAGE_SIZE = 224
+BATCH_SIZE = 32
+NUM_EPOCHS = 20
+LEARNING_RATE = 0.001
+TEST_SPLIT = 0.2
+VAL_SPLIT = 0.1
+NUM_CLASSES = 100
+```
+
+Device selection:
+
+```python
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+```
+
+---
+
+## Data Preprocessing
+
+Training transformations include:
+
+```text
+RandomHorizontalFlip
+RandomRotation
+ColorJitter
+RandomAffine
+Resize to 224×224
+ToTensor
+Normalize
+```
+
+Validation and test transformations include:
+
+```text
+Resize to 224×224
+ToTensor
+Normalize
+```
+
+The reason for resizing to 224×224 is that many pretrained ImageNet models, including EfficientNet variants, are designed around larger image inputs than CIFAR-100's original 32×32 resolution.
+
+---
+
+## Inference Pipeline
+
+The inference pipeline accepts either an image file path or a PIL image object.
+
+Steps:
+
+1. Convert image to RGB
+2. Resize image to model input size
+3. Convert image to tensor
+4. Normalize image
+5. Add batch dimension
+6. Move tensor to CPU or GPU
+7. Run model forward pass
+8. Apply softmax to logits
+9. Extract top-k predictions
+10. Return JSON-friendly results
+
+Example output:
+
 ```json
 {
   "success": true,
   "predictions": [
     {
-      "class_id": 47,
-      "class_name": "dog",
-      "probability": 0.8723,
-      "confidence": "87.23%"
+      "class_id": 281,
+      "class_name": "tabby",
+      "probability": 0.7341,
+      "confidence": "73.41%"
     },
     {
-      "class_id": 49,
-      "class_name": "wolf",
-      "probability": 0.0845,
-      "confidence": "8.45%"
-    },
-    ...
+      "class_id": 282,
+      "class_name": "tiger_cat",
+      "probability": 0.1182,
+      "confidence": "11.82%"
+    }
   ],
-  "top_prediction": "dog",
-  "processing_time_ms": 45
+  "top_prediction": "tabby"
 }
 ```
 
-**Response** (Error):
+### Test-Time Augmentation
+
+The API uses test-time augmentation for predictions.
+
+Test-time augmentation means the system creates several slightly modified versions of the input image, predicts on each version, averages the probabilities, and returns the final top-k results.
+
+This can improve robustness, but it increases inference time.
+
+---
+
+## API Reference
+
+Base URL for local development:
+
+```text
+http://localhost:7860
+```
+
+### 1. `GET /`
+
+Serves the web frontend.
+
+Response:
+
+```text
+HTML page
+```
+
+---
+
+### 2. `POST /api/predict`
+
+Classifies an uploaded image.
+
+Request:
+
+```bash
+curl -X POST \
+  -F "file=@example.jpg" \
+  http://localhost:7860/api/predict
+```
+
+Successful response:
+
+```json
+{
+  "success": true,
+  "predictions": [
+    {
+      "class_id": 281,
+      "class_name": "tabby",
+      "probability": 0.7341,
+      "confidence": "73.41%"
+    }
+  ],
+  "top_prediction": "tabby"
+}
+```
+
+Error response examples:
+
 ```json
 {
   "success": false,
-  "error": "No file provided",
-  "status_code": 400
+  "error": "No file provided"
 }
 ```
 
-#### 2. GET `/api/health`
-
-Check server status.
-
-**Request**:
-```bash
-curl http://localhost:5000/api/health
+```json
+{
+  "success": false,
+  "error": "File type not allowed. Allowed types: png, jpg, jpeg, gif, bmp"
+}
 ```
 
-**Response**:
+---
+
+### 3. `GET /api/health`
+
+Checks whether the service is running and whether the model loaded successfully.
+
+Request:
+
+```bash
+curl http://localhost:7860/api/health
+```
+
+Response:
+
 ```json
 {
   "status": "healthy",
   "model_loaded": true,
-  "device": "cpu",
-  "model_name": "ResNet50 Transfer Learning"
+  "device": "cpu"
 }
 ```
 
-#### 3. GET `/api/info`
+---
 
-Get API information.
+### 4. `GET /api/info`
 
-**Request**:
+Returns app metadata.
+
+Request:
+
 ```bash
-curl http://localhost:5000/api/info
+curl http://localhost:7860/api/info
 ```
 
-**Response**:
+Response:
+
 ```json
 {
-  "api_version": "1.0",
-  "model_version": "advanced",
-  "dataset": "CIFAR-100",
-  "num_classes": 100,
-  "max_file_size_mb": 5,
-  "supported_formats": ["jpg", "png", "gif", "bmp"]
+  "name": "CIFAR-100 Image Classification API",
+  "version": "1.0.0",
+  "description": "Computer vision model for image classification",
+  "supported_formats": ["png", "jpg", "jpeg", "gif", "bmp"],
+  "max_file_size_mb": 5.0,
+  "device": "cpu",
+  "deployment": "Hugging Face Spaces"
 }
 ```
 
-### Error Handling
-
-The API returns appropriate HTTP status codes:
-
-| Status | Meaning | Example |
-|--------|---------|---------|
-| 200 | Success | Prediction completed |
-| 400 | Bad Request | No file provided |
-| 413 | Payload Too Large | File > 5MB |
-| 500 | Server Error | Model loading failed |
-
 ---
 
-## ⚙️ Complete Execution Workflow
+## Docker Deployment
 
-### Timeline: ~1 hour total
+Build the Docker image:
 
 ```bash
-# 1. Install dependencies (5-10 minutes)
-pip install -r requirements.txt
-
-# 2. Train models (45 minutes on CPU)
-python train.py
-# ↳ Downloads CIFAR-100
-# ↳ Trains baseline CNN
-# ↳ Trains ResNet50
-# ↳ Evaluates both models
-# ↳ Saves to models/ directory
-
-# 3. Start web server (< 1 minute)
-python src/app.py
-# ↳ Loads models into memory
-# ↳ Starts Flask server
-# ↳ Ready for predictions
-
-# 4. Use the system (immediate)
-# ↳ Open http://localhost:5000
-# ↳ Upload images
-# ↳ Get predictions
+docker build -t image-classification-app .
 ```
 
-### Step-by-Step Execution Guide
-
-#### Pre-Requisites Verification (2 minutes)
+Run the container:
 
 ```bash
-# Check Python version
-python --version
-
-# Check disk space
-# Need ~2GB free
-
-# Check internet connection
-# Required for downloading CIFAR-100
+docker run -p 7860:7860 image-classification-app
 ```
 
-#### Installation (5-10 minutes)
+Open:
 
-```bash
-# Create virtual environment (optional)
-python -m venv venv
-source venv/bin/activate  # or venv\Scripts\activate on Windows
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Verify installation
-python -c "import torch; print(f'PyTorch: {torch.__version__}')"
+```text
+http://localhost:7860
 ```
 
-#### Training (45 minutes on CPU, 12 minutes on GPU)
+The Dockerfile uses:
 
-```bash
-# Run training script
-python train.py
-
-# Output: models/baseline_model.pt and models/advanced_model.pt
-# Check accuracy metrics in console output
+```dockerfile
+FROM python:3.10-slim
+WORKDIR /app
+EXPOSE 7860
+CMD ["python", "src/app.py"]
 ```
 
-#### Deployment (< 1 minute)
+Environment variables used in Docker:
 
-```bash
-# Start Flask server
-python src/app.py
-
-# In another terminal, verify server
-curl http://localhost:5000/api/health
-```
-
-#### Testing (5 minutes)
-
-```bash
-# Test via web interface
-# Open http://localhost:5000
-# Upload an image
-# Verify prediction
-
-# OR test via API
-curl -X POST -F "file=@test.jpg" http://localhost:5000/api/predict
-```
-
-#### Optional: Interactive Analysis (30 minutes)
-
-```bash
-# Start Jupyter notebook
-jupyter notebook
-
-# Open notebooks/analysis.ipynb
-# Run cells to explore data and models
+```text
+API_PORT=7860
+API_HOST=0.0.0.0
+API_DEBUG=false
+DEVICE=cpu
 ```
 
 ---
 
-## 🎛️ Configuration Reference
+## Hugging Face Spaces Deployment
 
-### File: `src/config.py`
+This project is configured for Hugging Face Spaces using Docker.
+
+The README metadata at the top specifies:
+
+```yaml
+sdk: docker
+app_port: 7860
+```
+
+Hugging Face Spaces expects the app to listen on port `7860`, which is handled through:
 
 ```python
-# ============================================================
-# MODEL CONFIGURATION
-# ============================================================
-IMAGE_SIZE = 224            # Input image dimension (pixels)
-NUM_CLASSES = 100           # CIFAR-100 has 100 classes
-
-# ============================================================
-# TRAINING CONFIGURATION
-# ============================================================
-BATCH_SIZE = 32             # Training batch size
-NUM_EPOCHS = 20             # Number of training epochs
-LEARNING_RATE = 0.001       # Optimizer learning rate
-MOMENTUM = 0.9              # SGD momentum (if used)
-WEIGHT_DECAY = 5e-4         # L2 regularization
-
-# ============================================================
-# DATA SPLIT CONFIGURATION
-# ============================================================
-TRAIN_SPLIT = 0.8           # 80% training
-VAL_SPLIT = 0.1             # 10% validation
-TEST_SPLIT = 0.1            # 10% test
-
-# ============================================================
-# DEVICE CONFIGURATION
-# ============================================================
-DEVICE = "cuda"             # "cuda" (GPU) or "cpu"
-
-# ============================================================
-# API CONFIGURATION
-# ============================================================
-API_HOST = "0.0.0.0"        # Listen on all interfaces
-API_PORT = 5000             # Port number
-API_DEBUG = True            # Flask debug mode
-API_MAX_FILE_SIZE_MB = 5    # Max upload size
-
-# ============================================================
-# PATHS
-# ============================================================
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = os.path.join(BASE_DIR, 'data')
-MODEL_DIR = os.path.join(BASE_DIR, 'models')
+API_PORT = int(os.getenv("API_PORT", "7860"))
 ```
 
-### Customization Examples
+Deployment steps:
 
-**Example 1: GPU Training (Fast)**
+1. Create a new Hugging Face Space
+2. Select Docker as the SDK
+3. Upload the repository files
+4. Ensure the Dockerfile is at the repository root
+5. Ensure the app listens on port 7860
+6. Wait for the Space to build and start
+
+---
+
+## Configuration
+
+Configuration is centralized in `src/config.py`.
+
+### Paths
+
 ```python
-DEVICE = "cuda"
-BATCH_SIZE = 64
-NUM_EPOCHS = 50
+PROJECT_ROOT = Path(__file__).parent.parent
+DATA_DIR = PROJECT_ROOT / "data"
+MODELS_DIR = PROJECT_ROOT / "models"
+NOTEBOOKS_DIR = PROJECT_ROOT / "notebooks"
 ```
 
-**Example 2: CPU Training (Conservative)**
+### Model settings
+
 ```python
-DEVICE = "cpu"
-BATCH_SIZE = 16
-NUM_EPOCHS = 5
+IMAGE_SIZE = 224
+BATCH_SIZE = 32
+NUM_EPOCHS = 20
+LEARNING_RATE = 0.001
+NUM_CLASSES = 100
 ```
 
-**Example 3: Learning Rate Tuning**
+### API settings
+
 ```python
-LEARNING_RATE = 0.0001      # Very small for careful tuning
-NUM_EPOCHS = 100             # Train longer
+API_HOST = "0.0.0.0"
+API_PORT = int(os.getenv("API_PORT", "7860"))
+API_DEBUG = os.getenv("API_DEBUG", "True").lower() == "true"
 ```
 
 ---
 
-## 🆘 Troubleshooting
+## Evaluation and Expected Results
 
-### Issue 1: "Models not found" Error
+For CIFAR-100 training, useful metrics include:
 
-**Symptoms**: 
-```
-FileNotFoundError: models/advanced_model.pt
-```
+- Training loss
+- Validation loss
+- Training accuracy
+- Validation accuracy
+- Test accuracy
+- Per-class accuracy
+- Confusion matrix
+- Precision, recall, and F1 score
 
-**Solution**:
-```bash
-python train.py  # Train first
-```
+The baseline CNN is expected to provide a modest but useful reference point.
 
-### Issue 2: Port 5000 Already in Use
+The transfer-learning model should generally perform better when properly fine-tuned with a CIFAR-100 output head.
 
-**Symptoms**:
-```
-Address already in use
-```
+Because the current advanced model keeps ImageNet pretrained output behavior, reported CIFAR-100 performance should be interpreted carefully unless the classifier head is explicitly modified to 100 classes and retrained.
 
-**Solution**:
+---
+
+## Known Limitations
+
+This section is intentionally included to show engineering honesty and awareness.
+
+### 1. CIFAR-100 vs ImageNet label mismatch
+
+The training configuration is built around CIFAR-100 with 100 classes, but the current inference code loads ImageNet class labels from `imagenet_class_index.json`.
+
+This means the deployed inference behavior is closer to ImageNet object classification unless the model head and label mapping are updated for CIFAR-100.
+
+### 2. EfficientNet-B5 output head
+
+The current `create_advanced_model()` function loads EfficientNet-B5 with ImageNet pretrained weights and keeps its original ImageNet output head.
+
+For a true CIFAR-100 classifier, the final classifier should be replaced:
+
 ```python
-# In src/config.py, change:
-API_PORT = 5001  # or any available port
-
-# Then restart:
-python src/app.py
+model.classifier[1] = nn.Linear(model.classifier[1].in_features, 100)
 ```
 
-Or kill existing process:
-```bash
-# Windows
-netstat -ano | findstr :5000
-taskkill /PID <PID> /F
+Then the model should be fine-tuned on CIFAR-100.
 
-# Mac/Linux
-lsof -ti:5000 | xargs kill -9
-```
+### 3. Documentation must match implementation
 
-### Issue 3: CUDA Out of Memory
+Older documentation may mention ResNet50, but the current implementation uses EfficientNet-B5.
 
-**Symptoms**:
-```
-RuntimeError: CUDA out of memory
-```
+The README has been updated to reflect the actual implementation.
 
-**Solution**:
+### 4. Normalization consistency
+
+Training uses CIFAR-100 normalization values, while inference uses ImageNet normalization values.
+
+This should be made consistent depending on the intended final model:
+
+- Use CIFAR-100 normalization for a CIFAR-100-trained model
+- Use ImageNet normalization for an ImageNet-pretrained inference model
+
+### 5. Confidence string formatting
+
+The inference code contains formatting like:
+
 ```python
-# In src/config.py:
-BATCH_SIZE = 16     # Reduce batch size
-NUM_EPOCHS = 5      # Fewer epochs
-DEVICE = "cpu"      # Use CPU instead
+f"{float(prob) * 100:.2 f}%"
 ```
 
-### Issue 4: Slow Training on CPU
+This should be corrected to:
 
-**Symptoms**: Training takes too long
-
-**Solution**:
 ```python
-# In src/config.py:
-BATCH_SIZE = 16             # Smaller batches
-NUM_EPOCHS = 5              # Fewer epochs
-LEARNING_RATE = 0.01        # Larger learning rate for faster convergence
-```
-
-### Issue 5: Dataset Download Fails
-
-**Symptoms**:
-```
-Failed to download CIFAR-100
-```
-
-**Solution**:
-```bash
-# Manual download
-python -c "from torchvision.datasets import CIFAR100; \
-  CIFAR100('./data', train=True, download=True)"
-```
-
-### Issue 6: Cannot Connect to Server
-
-**Symptoms**: Cannot access http://localhost:5000
-
-**Solutions**:
-```bash
-# Try alternative addresses
-# http://127.0.0.1:5000
-# http://192.168.x.x:5000
-
-# Check if server is running
-curl http://localhost:5000/api/health
-
-# Check firewall settings
-# Windows: Allow Python in Windows Defender
-
-# Restart server
-# Kill Python process and run again
-python src/app.py
-```
-
-### Issue 7: Import Errors
-
-**Symptoms**:
-```
-ModuleNotFoundError: No module named 'torch'
-```
-
-**Solution**:
-```bash
-# Reinstall dependencies
-pip install --upgrade -r requirements.txt
-```
-
-### Issue 8: Validation Script Fails
-
-**Symptoms**: validate_setup.bat/sh reports errors
-
-**Solution**:
-```bash
-# Run manual checks
-python --version
-python -c "import torch; print(torch.__version__)"
-python -c "import torch; print(torch.cuda.is_available())"
+f"{float(prob) * 100:.2f}%"
 ```
 
 ---
 
-## 📈 Performance Metrics
+## Future Improvements
 
-### Training Performance
+Recommended next steps:
 
-| Configuration | Baseline | Advanced |
-|---|---|---|
-| **CPU (i5-8400)** | 15 min | 40 min |
-| **GPU (GTX 1080)** | 3 min | 8 min |
-| **GPU (RTX 3090)** | 1 min | 2 min |
-
-*Timing for 5 epochs on CIFAR-100*
-
-### Inference Speed
-
-| Device | Latency | FPS |
-|---|---|---|
-| CPU | 50-100 ms | 10-20 |
-| GPU (GTX 1080) | 10-20 ms | 50-100 |
-| GPU (RTX 3090) | 2-5 ms | 200+ |
-
-### Model Sizes
-
-| Model | Parameters | File Size | Memory |
-|---|---|---|---|
-| Baseline CNN | 1.2M | 5 MB | 100 MB |
-| ResNet50 | 23M | 95 MB | 500 MB |
-
-### Accuracy by Epoch
-
-| Epoch | Baseline Acc | Advanced Acc |
-|---|---|---|
-| 1 | 22% | 40% |
-| 5 | 33% | 43% |
-| 10 | 35% | 44% |
-| 20 | 36% | 45% |
-| 50 | 37% | 47% |
+1. Replace EfficientNet-B5 classifier head with a 100-class CIFAR-100 head
+2. Add CIFAR-100 class label mapping
+3. Make training and inference normalization consistent
+4. Add confusion matrix and per-class accuracy
+5. Add precision, recall, and F1 score
+6. Add experiment tracking with MLflow, Weights & Biases, or TensorBoard
+7. Save training curves as artifacts
+8. Add unit tests for preprocessing, inference, and API responses
+9. Add model versioning through Hugging Face Hub
+10. Add CI checks for formatting and import errors
+11. Add clearer GPU/CPU deployment instructions
+12. Improve frontend result visualization
+13. Add batch prediction endpoint
+14. Add Grad-CAM or saliency maps for explainability
 
 ---
 
-## 🏗️ Code Architecture & Quality
+## Interview Explanation
 
-### Separation of Concerns
+A strong interview explanation:
 
-The project follows clean architecture principles:
+> This project is an end-to-end image classification system. I selected CIFAR-100 because it is more challenging than CIFAR-10 and contains 100 balanced classes. The project demonstrates the full ML engineering lifecycle: data loading, preprocessing, model training, evaluation, inference, API development, frontend integration, Dockerization, and Hugging Face Spaces deployment.
+>
+> I implemented a baseline CNN to establish a simple reference model and used transfer learning with EfficientNet-B5 for stronger real-world image recognition. The backend is built with Flask and exposes endpoints for prediction, health checks, and API metadata. The frontend allows users to upload images and view top-k predictions with confidence scores.
+>
+> From an engineering perspective, I focused on modular code, configuration management, input validation, error handling, and deployment readiness. I also identified areas for improvement, such as aligning the classifier head and label mapping for CIFAR-100, making preprocessing consistent between training and inference, and adding richer evaluation metrics.
 
-```
-src/config.py           → Configuration (no hardcoded values)
-    ↓
-src/data.py            → Data loading & preprocessing
-    ↓
-src/model.py           → Model definitions & training logic
-    ↓
-src/inference.py       → Inference pipeline (input→output)
-    ↓
-src/app.py            → REST API server
-    ↓
-static/               → Web frontend
-```
+### How to explain the baseline model
 
-### Module Overview
+> The baseline CNN is used as a sanity check. It confirms that the dataset, preprocessing, training loop, and evaluation pipeline work correctly before using a larger pretrained model.
 
-#### config.py
-- Centralized configuration
-- Device selection
-- Path management
-- Easy to modify
+### How to explain transfer learning
 
-#### data.py
-- CIFAR-100 dataset loading
-- Image preprocessing (resize, normalize)
-- Data augmentation (flip, rotate, color jitter)
-- Train/val/test splitting
+> Transfer learning allows the model to reuse visual features learned from a large dataset like ImageNet. Instead of learning edges, textures, and shapes from scratch, the model starts with useful pretrained representations and can be fine-tuned for the target classification task.
 
-#### model.py
-- Baseline CNN architecture
-- ResNet50 transfer learning
-- Training loop
-- Validation loop
-- Model checkpointing
+### How to explain softmax
 
-#### inference.py
-- Image preprocessing
-- Model inference
-- Top-K predictions
-- Confidence scoring
+> The model outputs raw scores called logits. Softmax converts those logits into probabilities, and then the system selects the top-k classes with the highest probabilities.
 
-#### app.py
-- Flask server setup
-- API endpoints
-- Error handling
-- CORS configuration
+### How to explain test-time augmentation
 
-### Code Quality Metrics
+> Test-time augmentation creates multiple augmented versions of the uploaded image, predicts on each version, averages the probabilities, and returns the final result. It can improve robustness but increases inference time.
 
-✅ **Modularity**: Clear separation (8.5/10)
-✅ **Readability**: Well-commented, clear variable names (8/10)
-✅ **Robustness**: Error handling throughout (7.5/10)
-✅ **Documentation**: Comprehensive docstrings (8/10)
-✅ **Best Practices**: ML engineering standards (8/10)
+### How to discuss limitations professionally
 
-### Production Considerations
-
-- ✅ Input validation (file type, size)
-- ✅ Error recovery (graceful fallback)
-- ✅ Logging (debugging support)
-- ✅ Configuration management (easy updates)
-- ✅ Performance monitoring (timing logs)
+> One thing I would improve is consistency between the CIFAR-100 training pipeline and the ImageNet-based inference pipeline. The current app demonstrates transfer-learning inference, but for a strict CIFAR-100 classifier, I would replace the final classifier layer with a 100-class head, use CIFAR-100 labels, and retrain or fine-tune the model.
 
 ---
 
-## ✅ Assessment Compliance
+## Troubleshooting
 
-### Requirement 1: Data Understanding ✅
+### Problem: Space shows configuration error
 
-- [x] Analyze CIFAR-100 dataset (100 classes, 60K images)
-- [x] Understand class distribution (perfectly balanced)
-- [x] Implement preprocessing (224px resize, normalization)
-- [x] Apply augmentation (flip, rotation, color jitter)
-- [x] Proper train/val/test split (45K/5K/10K)
-- [x] Explore data in Jupyter notebook
+Possible causes:
 
-### Requirement 2: Model Selection & Training ✅
+- App is not listening on port 7860
+- Docker build failed
+- Missing model file
+- Dependency conflict
+- Model loading takes too long
+- Incorrect environment variable
 
-- [x] Compare two models (Baseline CNN vs ResNet50)
-- [x] Justify transfer learning approach
-- [x] Implement proper training loop
-- [x] Track metrics (loss, accuracy)
-- [x] Save checkpoints
-- [x] Complete training pipeline
-
-### Requirement 3: Evaluation & Error Analysis ✅
-
-- [x] Proper test set evaluation
-- [x] Multiple metrics (accuracy, loss)
-- [x] Visualization of results
-- [x] Error pattern analysis
-- [x] Failure mode identification
-- [x] Improvement recommendations
-
-### Requirement 4: Inference & Deployment ✅
-
-- [x] Clean inference pipeline
-- [x] REST API endpoints
-- [x] Web frontend
-- [x] Error handling
-- [x] Production logging
-- [x] Docker support (bonus)
-
-### Requirement 5: Engineering Quality ✅
-
-- [x] Project structure (src/, static/, etc.)
-- [x] Modular code design
-- [x] Configuration management
-- [x] Error handling
-- [x] Clear documentation
-- [x] Production practices
-
----
-
-## ❓ FAQ & Support
-
-### General Questions
-
-**Q: How long does the entire process take?**
-A: ~1 hour total (10 min install + 45 min train + 5 min deploy)
-
-**Q: Do I need a GPU?**
-A: No. CPU works fine (~45 min training). GPU is 3-5x faster.
-
-**Q: What if I want to use a different dataset?**
-A: Modify `src/data.py` to load your dataset.
-
-**Q: Can I change the model architecture?**
-A: Yes. Edit `src/model.py` to implement different architectures.
-
-### Technical Questions
-
-**Q: What Python version is required?**
-A: 3.9+. Tested on 3.9, 3.10, 3.11, 3.12.
-
-**Q: Can I run this on Windows/Mac/Linux?**
-A: Yes. All platforms supported.
-
-**Q: What about cloud deployment?**
-A: Docker file included. Ready for AWS/Azure/GCP.
-
-**Q: How do I export the model?**
-A: Models are already saved in PyTorch format (.pt files).
-
-### Troubleshooting Questions
-
-**Q: Training is very slow**
-A: Reduce BATCH_SIZE or NUM_EPOCHS in config.py
-
-**Q: Getting "CUDA out of memory"**
-A: Set DEVICE = "cpu" or reduce BATCH_SIZE
-
-**Q: Web interface not loading**
-A: Check if Flask server is running. Try http://127.0.0.1:5000
-
-**Q: Models not found after training**
-A: Check if `models/` directory exists and contains .pt files
-
----
-
-## 🚀 Next Steps
-
-### Immediate (Next 5 minutes)
-1. ✅ Read this README (you're doing it!)
-2. ✅ Verify Python installation
-3. ✅ Install dependencies
-
-### Short Term (Next 60 minutes)
-1. ✅ Run training: `python train.py`
-2. ✅ Start server: `python src/app.py`
-3. ✅ Test web interface
-4. ✅ Try different images
-
-### Medium Term (Next few hours)
-1. Explore code in `src/` directory
-2. Run Jupyter notebook
-3. Experiment with hyperparameters
-4. Analyze error patterns
-
-### Long Term (Future)
-1. Modify model architecture
-2. Use different dataset
-3. Deploy to cloud
-4. Add new features
-
----
-
-## 🔗 Quick Reference
-
-### Essential Commands
+Check:
 
 ```bash
-# Install
-pip install -r requirements.txt
-
-# Train
-python train.py
-
-# Deploy
-python src/app.py
-
-# Test API
-curl -X POST -F "file=@test.jpg" http://localhost:5000/api/predict
-
-# Analyze
-jupyter notebook notebooks/analysis.ipynb
-
-# Validate
-validate_setup.bat  (Windows)
-bash validate_setup.sh  (Mac/Linux)
-
-# Docker
-docker build -t cifar100 .
-docker run -p 5000:5000 cifar100
+curl http://localhost:7860/api/health
 ```
 
-### Key Files
-
-| Task | File |
-|------|------|
-| **Configuration** | `src/config.py` |
-| **Training** | `train.py` |
-| **Server** | `src/app.py` |
-| **Web UI** | `static/index.html` |
-| **Analysis** | `notebooks/analysis.ipynb` |
+Also check Hugging Face Spaces build logs.
 
 ---
 
-## 📞 Support
+### Problem: Model not loaded
 
-If you encounter issues:
+Possible causes:
 
-1. Check [Troubleshooting](#troubleshooting) section above
-2. Run validation: `validate_setup.bat` or `bash validate_setup.sh`
-3. Review error message carefully
-4. Check internet connection (for dataset download)
-5. Verify file permissions
+- `models/advanced_model.pt` is missing
+- Saved model architecture does not match current model code
+- CPU/GPU mismatch
+- Incompatible PyTorch version
 
----
-
-## 📝 Project Statistics
-
-| Metric | Value |
-|--------|-------|
-| **Total Files** | 20+ |
-| **Python Code** | ~2,500 lines |
-| **Modules** | 6 core |
-| **Web Files** | 3 |
-| **Documentation** | 1 comprehensive file |
-| **Models** | 2 (baseline + advanced) |
-| **Dataset** | CIFAR-100 (60K images) |
+The inference code falls back to pretrained weights if compatible saved weights cannot be loaded.
 
 ---
 
-## ✨ Key Highlights
+### Problem: File upload fails
 
-🌟 **Complete**: Nothing left to add
-🌟 **Production-Ready**: Deployment-focused design
-🌟 **Well-Documented**: Comprehensive guide (this file)
-🌟 **Engineering-Focused**: Methodology over accuracy chasing
-🌟 **Reproducible**: All code version-controlled
-🌟 **Extensible**: Easy to modify and improve
-🌟 **Educational**: Demonstrates ML best practices
+Check that:
 
----
+- File is included under the form field name `file`
+- File extension is allowed
+- File size is under 5 MB
+- Image can be opened by PIL
 
-## 🎓 Learning Outcomes
+Allowed formats:
 
-After completing this project, you'll understand:
-
-1. ✅ End-to-end ML workflow
-2. ✅ Transfer learning techniques
-3. ✅ Data preprocessing & augmentation
-4. ✅ Model training & evaluation
-5. ✅ REST API design
-6. ✅ Web frontend integration
-7. ✅ Production deployment
-8. ✅ Error analysis & debugging
+```text
+png, jpg, jpeg, gif, bmp
+```
 
 ---
 
-## 📄 License
+### Problem: Wrong or unexpected class names
 
-This project is for educational purposes (ML Engineering Assessment).
+This is likely due to label mapping mismatch.
 
----
+If using ImageNet pretrained inference:
 
-## 👨‍💻 Author
+```text
+Use ImageNet labels
+```
 
-Created as a demonstration of ML engineering best practices for computer vision tasks.
+If using CIFAR-100 training:
 
----
-
-## 🎉 Ready to Go!
-
-Everything is complete and ready for deployment.
-
-**Start now**: `pip install -r requirements.txt && python train.py && python src/app.py`
-
-**Next**: Open http://localhost:5000
-
-**Happy learning! 🚀**
+```text
+Use CIFAR-100 labels
+Change classifier head to 100 classes
+Use CIFAR-100 preprocessing
+```
 
 ---
 
-**Last Updated**: April 28, 2026
-**Status**: ✅ COMPLETE AND READY FOR DEPLOYMENT
-**Quality**: Production-Grade ML Engineering
+## License
+
+MIT License
+
+---
+
+## Author
+
+Created by **ahmadhammadamir75** as an ML engineering image classification project deployed on Hugging Face Spaces.
